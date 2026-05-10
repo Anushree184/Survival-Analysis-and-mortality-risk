@@ -2,26 +2,31 @@ import streamlit as st
 import numpy as np
 import joblib
 
-# Load trained model
+# Load model and scaler
 model = joblib.load("model.pkl")
+scaler = joblib.load("scaler.pkl")
 
-# App title
+# Title
 st.title("Breast Cancer Mortality Risk Prediction")
-
-st.write("Predict whether patient may die within 10 years.")
 
 # Inputs
 age = st.number_input("Age at Diagnosis")
 tumor_size = st.number_input("Tumor Size")
-tumor_stage = st.number_input("Tumor Stage")
+lymph_nodes = st.number_input("Positive Lymph Nodes")
 
-# Prediction button
+# Predict button
 if st.button("Predict"):
 
-    data = np.array([[age, tumor_size, tumor_stage]])
+    # Input array
+    data = np.array([[age, tumor_size, lymph_nodes]])
 
-    prediction = model.predict(data)
+    # Scale input
+    data_scaled = scaler.transform(data)
 
+    # Predict
+    prediction = model.predict(data_scaled)
+
+    # Output
     if prediction[0] == 1:
         st.error("High Mortality Risk")
     else:
